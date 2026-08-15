@@ -4066,7 +4066,7 @@ superLuaAutoClickForTriggerbot_thread = createNativeThread(function (thread)
     local crshair = readByte('triggerx')
     if crshair == 80 then
        mouse_event(MOUSEEVENTF_LEFTDOWN)
-       sleep(70)
+       sleep(20)
        mouse_event(MOUSEEVENTF_LEFTUP)
     end
     sleep(30)
@@ -4099,6 +4099,116 @@ end
                         <Key>4</Key>
                       </Keys>
                       <ID>1</ID>
+                    </Hotkey>
+                  </Hotkeys>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1843</ID>
+                  <Description>\"Auto Click Target [20ms]\"</Description>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>{$Lua}
+if syntaxcheck then return end
+
+[ENABLE]
+autoClickTarget_thread = createNativeThread(function (thread)
+  thread.freeOnTerminate(false)
+  thread.Name = 'autoClickTarget_thread'
+  local crshair
+  while not thread.Terminated do
+    local crshair = readByte('triggerx')
+    if crshair == 80 then
+       mouse_event(MOUSEEVENTF_LEFTDOWN)
+       sleep(10)
+       mouse_event(MOUSEEVENTF_LEFTUP)
+    end
+    sleep(20)
+  end
+end)
+
+
+
+[DISABLE]
+if autoClickTarget_thread then
+   autoClickTarget_thread.terminate()
+   autoClickTarget_thread.waitfor()
+   autoClickTarget_thread.destroy()
+   autoClickTarget_thread=nil
+end
+
+</AssemblerScript>
+                  <Hotkeys>
+                    <Hotkey>
+                      <Action>Toggle Activation</Action>
+                      <Keys>
+                        <Key>112</Key>
+                      </Keys>
+                      <Description>Auto Click Target 20ms</Description>
+                      <ID>0</ID>
+                    </Hotkey>
+                  </Hotkeys>
+                </CheatEntry>
+                <CheatEntry>
+                  <ID>1844</ID>
+                  <Description>\"AimBot Toggle\"</Description>
+                  <VariableType>Auto Assembler Script</VariableType>
+                  <AssemblerScript>{$Lua}
+if syntaxcheck then return end
+
+aimbotEnabled = false
+aimbot_thread = nil
+
+[ENABLE]
+function toggleAimbot()
+  aimbotEnabled = not aimbotEnabled
+  if aimbotEnabled then
+    if aimbot_thread == nil then
+      aimbot_thread = createNativeThread(function (thread)
+        thread.freeOnTerminate(false)
+        thread.Name = 'aimbot_thread'
+        while not thread.Terminated do
+          if aimbotEnabled then
+            local crshair = readByte('triggerx')
+            if crshair == 80 then
+              -- Aim at target logic here
+              -- This simulates moving mouse to target
+              -- You may need to adjust sensitivity
+              mouse_event(MOUSEEVENTF_MOVE, 1, 0, 0, 0)
+            end
+          end
+          sleep(5)
+        end
+      end)
+    end
+  else
+    if aimbot_thread then
+      aimbot_thread.terminate()
+      aimbot_thread.waitfor()
+      aimbot_thread.destroy()
+      aimbot_thread = nil
+    end
+  end
+end
+
+toggleAimbot()
+
+[DISABLE]
+aimbotEnabled = false
+if aimbot_thread then
+   aimbot_thread.terminate()
+   aimbot_thread.waitfor()
+   aimbot_thread.destroy()
+   aimbot_thread=nil
+end
+
+</AssemblerScript>
+                  <Hotkeys>
+                    <Hotkey>
+                      <Action>Toggle Activation</Action>
+                      <Keys>
+                        <Key>113</Key>
+                      </Keys>
+                      <Description>AimBot On/Off</Description>
+                      <ID>0</ID>
                     </Hotkey>
                   </Hotkeys>
                 </CheatEntry>
